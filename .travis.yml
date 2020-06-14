@@ -1,3 +1,4 @@
+language: generic
 sudo: required
 services:
   - docker
@@ -6,4 +7,16 @@ before_install:
   - docker build -t emlmsc/docker-test -f Dockerfile.dev .
 
 script:
-  - docker run emlmsc/docker-test npm run test -- --coverage
+  - docker run -e CI=true emlmsc/docker-test npm run test
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: "docker-test"
+  env: "DockerTest-env"
+  bucket_name: "elasticbeanstalk-us-east-2-362021237312"
+  bucket_path: "docker-test"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
